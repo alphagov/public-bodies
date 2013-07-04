@@ -3,7 +3,7 @@ from StringIO import StringIO
 class Markdown(StringIO):
     def __init__(self):
         StringIO.__init__(self)
-    def yamlHeader(self, title, layout='default', categories='service', subcategory=''):
+    def yamlHeader(self, title, layout='default-public-bodies', categories='service', subcategory=''):
         header = '''---
 layout: {layout}
 title: {title}
