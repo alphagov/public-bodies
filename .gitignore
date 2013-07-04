@@ -1,1 +1,5 @@
 *.pyc
+_site
+*-*/
+index.json
+index.md
