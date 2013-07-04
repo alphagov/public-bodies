@@ -14,28 +14,133 @@ locale.setlocale(locale.LC_ALL, 'en_GB')
 
 # Convert a document from CSV to JSON
 
-
+def cleanBool(boolStr):
+    has_yes = "yes" in boolStr.lower()
+    has_no = "no" in boolStr.lower()
+    if has_yes and not has_no:
+        return True
+    elif has_yes and has_no:
+        return False
+    else:
+        return False
+def cleanNumber(numStr):
+    numStr = numStr.replace('*', '')
+    try:
+        return int(numStr)
+    except ValueError:
+        if '-' in numStr:
+            return 0
+        else:
+            nums = re.findall('[0-9]+', numStr)
+            if nums:
+                return sum([int(num) for num in nums])
+        raw_input("Error: " + numStr)
+        return 0
 def csvToRecords(fn):
     '''Convert a document into a list of dicts'''
     with open(fn, 'r') as csvFile:
         dictReader = csv.DictReader(csvFile)
-        return [record for record in dictReader]
-            
+        return [cleanRecord(record) for record in dictReader]
+
+def cleanMoney(monStr):
+    return cleanFinanceNumber(monStr)
+
+def cleanClassification(classStr):
+    if classStr == 'Executive NDPB':
+        return 'executive'
+    elif classStr == 'Advisory NDPB':
+        return 'advisory'
+    elif classStr == 'Tribunal NDPB':
+        return 'tribunal'
+    else:
+        return 'other'
+
+def cleanPbReform(s):
+    if "Merge" in s:
+        return "merge"
+    elif "No longer an NDPB" in s:
+        return "abolish"
+    elif "Retain" in s:
+        return "retain"
+    elif "Under Consideration" in s:
+        return "under_consideration"
+    else:
+        return "unknown"
+    
 def cleanRecord(record):
     '''Clean up the record'''
-    return record
+    record = {cleanName(k):v for k,v in record.items()} #puts all names into lower-case-hyphenated-format for ease of use
 
+    renamed_record = dict()
+    # Clean up the booleans
+    renamed_record["_public-meetings"] = record["public-meetings"]
+    renamed_record["_regulatory-function"] = record["regulatory-function"]
+    renamed_record["_public-minutes"] = record["public-minutes"]
+    renamed_record["_ocpa-regulated"] = record["ocpa-regulated"]
+    renamed_record["_register-of-interests"] = record["register-of-interests"]
+
+    renamed_record["public-meetings"] = cleanBool(record["public-meetings"])
+    renamed_record["regulatory-function"] = cleanBool(record["regulatory-function"])
+    renamed_record["public-minutes"] = cleanBool(record["public-minutes"]) 
+    renamed_record["ocpa-regulated"] = cleanBool(record["ocpa-regulated"])
+    renamed_record["register-of-interests"] = cleanBool(record["register-of-interests"])
+
+    # Clean up the plain numbers
+    renamed_record["_staff-employed-fte"] = record["staff-employed-fte"]
+    renamed_record["staff-employed-fte"] = cleanNumber(record["staff-employed-fte"])
+    
+    renamed_record["_count"] = record["count"]
+    renamed_record["body-count"] = cleanNumber(record["count"])
+    renamed_record["_multiple-bodies"] = record["multiple-bodies"]
+
+    # Clean up the money
+    renamed_record["_total-gross-expenditure"] = record["total-gross-expenditure"]
+    renamed_record["_government-funding"] = record["government-funding"]
+    renamed_record["_chief-executive-secretart-remuneration"] = record["chief-executive-secretart-remuneration"]
+    renamed_record["_chairs-remuneration-pa-unless-otherwise-stated"] = record["chairs-remuneration-pa-unless-otherwise-stated"]
+
+    renamed_record["total-gross-expenditure"] = cleanMoney(record["total-gross-expenditure"])
+    renamed_record["government-funding"] = cleanMoney(record["government-funding"])
+    renamed_record["chief-executive-remuneration"] = cleanMoney(record["chief-executive-secretart-remuneration"])
+    renamed_record["chairs-remuneration"] = cleanMoney(record["chairs-remuneration-pa-unless-otherwise-stated"])
+
+    # Transfer verbatim fields
+    renamed_record["name"] = record["name"]
+    renamed_record["description"] = record["description-terms-of-reference"]
+    renamed_record["chair"] = record["chair"]
+    renamed_record["chief-executive"] = record["chief-executive-secretary"]
+    
+    renamed_record["department"] = record["department"]
+    renamed_record["email"] = record["email"]
+    renamed_record["website"] = record["website"]
+    renamed_record["phone"] = record["phone"]
+    renamed_record["address"] = record["address"]
+    renamed_record["notes"] = record["notes"]
+    
+    renamed_record["last-review"] = record["last-review"]#Todo, parse into something more useful (remember some of these are just years, or explanations for why they feel they are immune from review)
+    renamed_record["last-annual-report"] = record["last-annual-report"]#Todo, parse into something more useful (takes a vast number of forms, despite it being an 'annual' report)
+    
+    renamed_record["classification"] = cleanClassification(record["classification"])
+    renamed_record["pb-reform"] = cleanPbReform(record["pb-reform"])
+    renamed_record["ombudsman"] = record["ombudsman"]
+    renamed_record["audit-arrangements"] = record["audit-arrangements"]
+
+    return renamed_record
+    
 def generatePublicBodyIndex(record):
     m = Markdown()
-    m.yamlHeader(record["Name"])
-    headers = ['Name', 'Department']
+    m.yamlHeader(record["name"])
     m.tableStart()
-    for key in headers:
-        v = record[key]
-        m.tableRowStart()
-        m.tag('th', key, dict())
-        m.tag('td', v, dict())
-        m.tableRowEnd()
+
+    m.tableRowStart()
+    m.tag('th', "Name", dict())
+    m.tag('td', record["name"], dict())
+    m.tableRowEnd()
+    
+    m.tableRowStart()
+    m.tag('th', "Department", dict())
+    m.tag('td', record["department"], dict())
+    m.tableRowEnd()
     m.tableEnd()
     
     
@@ -44,10 +149,10 @@ def generatePublicBodyIndex(record):
     return retValue
 
 def generateDepartmentIndex(records, d):
-    depts = set([record["Department"] for record in records])
+    depts = set([record["department"] for record in records])
     for department in depts:
         deptFileName = cleanName(department)
-        deptBodies = [record for record in records if record["Department"] == department]
+        deptBodies = [record for record in records if record["department"] == department]
         with open(d + '/' + deptFileName + '/index.json', 'w') as outFile:
             outFile.write(json.dumps(deptBodies))
         with open(d + '/' + deptFileName + '/index.md', 'w') as outFile:
@@ -59,12 +164,12 @@ def generateDepartmentIndex(records, d):
                 m.tableRowStart()
                 
                 m.tableCellStart()
-                m.htmlLink(body["Name"], './' + cleanName(body["Name"]) +'.html')
+                m.htmlLink(body["name"], './' + cleanName(body["name"]) +'.html')
                 m.tableCellEnd()
 
                 
                 m.tableCellStart()
-                m.write("£" + format(cleanFinanceNumber(body["Total Gross Expenditure"]), ',.0f'))
+                m.write("£" + format(body["total-gross-expenditure"], ',.0f'))
                 m.tableCellEnd()
 
                 m.tableRowEnd()
@@ -82,15 +187,15 @@ def cleanFinanceNumber(financeNumber):
     
 
 def generateMainIndex(records, d):
-    depts = set([record["Department"] for record in records])
+    depts = set([record["department"] for record in records])
     with open(d + '/index.md', 'w') as outFile:
         m = Markdown()
         m.yamlHeader("Public Bodies", layout='default-visualised')
         m.tableStart(htmlClass="barchart-table")
         m.tableHeader(['Department', 'Bodies', 'Annual Total Expenditure'])
         for department in depts:
-            bodies = [body for body in records if body['Department'] == department]
-            totalExpenditure = sum(cleanFinanceNumber(body['Total Gross Expenditure']) for body in bodies)
+            bodies = [body for body in records if body['department'] == department]
+            totalExpenditure = sum(body['total-gross-expenditure'] for body in bodies)
             deptFileName = cleanName(department)
             deptBodyCount = str(len(bodies))
             deptTotalExpenditure = "£" + format(totalExpenditure, ',.0f')
@@ -120,16 +225,15 @@ def cleanName(name):
     tidied_name = ''.join(ch for ch in name if ch not in set(string.punctuation))
     return '-'.join(tidied_name.lower().split())
     
-def outputRecords(fn, d):
+def outputRecords(records, d):
     '''Output grouped records to subfolders and a master json'''
-    records = csvToRecords(fn)
     for record in records:
-        deptFileName = cleanName(record["Department"])
+        deptFileName = cleanName(record["department"])
         if not os.path.isdir(deptFileName):
             os.mkdir(deptFileName)
-        with open(d + '/' + deptFileName + '/' + cleanName(record["Name"]) + ".json", 'w') as outFile:
+        with open(d + '/' + deptFileName + '/' + cleanName(record["name"]) + ".json", 'w') as outFile:
             outFile.write(json.dumps(record))
-        with open(d + '/' + deptFileName + '/' + cleanName(record["Name"]) + ".md", 'w') as outFile:
+        with open(d + '/' + deptFileName + '/' + cleanName(record["name"]) + ".md", 'w') as outFile:
             outFile.write(generatePublicBodyIndex(record))
     with open('index.json', 'w') as outFile:
         outFile.write(json.dumps(records))
@@ -141,5 +245,18 @@ if __name__ == "__main__":
         description = "Process NDPB data into json files"
     )
     parser.add_argument('filename')
+    parser.add_argument('--json', action='store_true', default=False)
+    parser.add_argument('--pretty', action='store_true', default=False)
+    parser.add_argument('--csv', action='store_true', default=False)
     args = parser.parse_args()
-    outputRecords(args.filename, os.getcwd())
+    data = csvToRecords(args.filename)
+    if args.json:
+        if args.pretty:
+            print(json.dumps(data, indent=4, sort_keys=True))
+        else:
+            print(json.dumps(data))
+    elif args.csv:
+        print 'csv'
+    else:
+        outputRecords(data, os.getcwd())
+    
