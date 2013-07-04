@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include _head.html %}
+
+    <style>
+    .search .results-list li.whitehall {
+      padding:1em;
+      margin:0 -1em 1em -1em;
+      background:none;
+    }
+    .search .results-list li.whitehall  .result-meta li.specialist{
+      background:none;
+      line-height: 1.3em;
+      text-indent: 10px;
+      padding-right:1em;
+      border-left:3px solid #2B8CC4;
+    }
+    .search .results-list li.whitehall  .result-meta li{
+      line-height: 1.3em;
+    }
+
+    /*.search .results-list li.external{
+      background-color:#fff2d3 !important;
+      margin-left:-1em !important;
+      margin-left:-1em !important;
+      padding:1em;
+    }*/
+    </style>
+  </head>
+  <body class="citizen mainstream">
+    <script type="text/javascript">document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script><a href="#content" class="visuallyhidden">Skip to main content</a>
+    {% include _header.html %}
+    <nav role="navigation" class="header-context">
+      <div class="beta-notice">
+        <div class="inner">
+          <p><a href="http://digital.cabinetoffice.gov.uk/2012/02/01/govuk-beta-day1/">BETA</a></p>
+        </div>
+      </div>
+      <ol class="group">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Search</a></li>
+      </ol>
+    </nav>
+    
+    <div id="wrapper" class="wrapper">
+      <section id="content" role="main" class="group search ancillary">
+        <div class="search-container group">
+              <form class="search-header search-header-2" role="search" accept-charset="utf-8" method="get" action="/search">
+              <fieldset>
+              <legend class="visuallyhidden">Search gov.uk</legend>
+                      <label for="search-main">50 results found for </label>
+                      <input name="q" value="income support" id="search-main" type="search"><input value="Search" class="button" type="submit">
+              </fieldset>
+            </form>
+          {{ content }}
+        </div>
+      </section>
+    </div><!--end wrapper-->
+    {% include _footer.html %}
+  </body>
+</html>

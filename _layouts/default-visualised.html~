@@ -1,0 +1,7 @@
+---
+layout: default-inside-gov
+---
+<div class="vis areachart"></div>
+{{ content }}
+<script src="/assets/toolkit/javascripts/vendor/d3/d3.v3.js"></script>
+<script src="/assets/toolkit/javascripts/visualisation.js"></script>

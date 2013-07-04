@@ -1,0 +1,11 @@
+    <div id="global-breadcrumb" class="header-context">
+        <nav role="navigation">
+          <ol class="group">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">{{ page.category }}</a></li>
+			{% if page.subcategory %}
+			<li><a href="#">{{ page.subcategory }}</a></li>
+			{% endif %}
+          </ol>
+        </nav>
+    </div>

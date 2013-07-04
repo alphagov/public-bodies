@@ -1,0 +1,117 @@
+// ===================================================
+// ACCORDION FORM
+//
+// Breaks a large form down into a series of vertically
+// arranged steps. The user progresses through each
+// step in turn, but can return to earlier steps.
+
+// From the toolkit
+@import "colours";
+
+@mixin accordion-form{
+
+  .accordion-form{
+    margin-bottom: 2em;
+    .section {
+      background-color: white;
+      // CURRENT SECTION
+      &.current {
+        border: 1px solid $turquoise;
+        margin-bottom: 0.6em;
+        // Header
+        .accordion-header {
+          display: block;
+          margin: 0;
+          padding: 0.5em 1em;
+          background-color: $turquoise;
+          color: $white;
+          -webkit-font-smoothing: subpixel-antialiased;
+          font-weight: normal;
+        }
+        // Content
+        .accordion-content{
+          display: block;
+          visibility: visible;
+          max-height: 600em;
+          padding: 0 2em;
+          background-color: $white;
+        }
+        // Actions
+        .accordion-actions{
+          list-style-image: none;
+          list-style-type: none;
+          padding: 0.5em 2em 0.5em 2em;
+          margin: 1em -2em 0 -2em;
+          background-color: #f9f9f9;
+          clear: both;
+          overflow: hidden;
+        }
+      }
+      // COMPLETED SECTIONS
+      &.complete {
+        display: block;
+        // Header
+        .accordion-header {
+          display: none;
+        }
+        // Summary
+        .accordion-summary {
+          display: block;
+          margin: 0;
+          a{
+            display: block;
+            margin-bottom: 0.5em;
+            padding: 0.5em 2.5em 0.5em 2em;
+            background-color: $highlight-colour;
+            background-image: url('/images/icon/progress-tick.png');
+            background-repeat: no-repeat;
+            background-position: 10px 50%;
+            color: $text-colour;
+            text-decoration: none;
+            .edit{
+              @include core-16;
+              float: right;
+              margin-right: -2em;
+              margin-top: 0.25em;
+              color: $link-colour;
+              //display: none;
+              
+            }
+            &:hover{
+              background-color: darken($highlight-colour, 3%);  
+              text-decoration: underline;          
+              .edit{
+                //display: block;
+                color: $link-colour;
+                text-decoration: underline;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // NON-JAVASCRIPT ENABLED STYLES
+
+
+  // JAVASCRIPT-ENABLED STYLES
+
+  .js-enabled {
+    .section {
+      .accordion-header{
+        display: none;
+      }
+      .accordion-content{
+        max-height: 0;
+        overflow: hidden;
+        visibility: hidden;
+        position: relative;
+      }
+      .accordion-summary{
+        display: none;
+      }
+    }
+  }
+
+}
