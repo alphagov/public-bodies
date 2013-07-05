@@ -1,11 +1,27 @@
 ---
 layout: default
 ---
+<p>Non-departmental public bodies (NDPBs) are organisations that sit at ‘arm’s-length’ from ministers and have varying degrees of operational autonomy and independence from ministers. They have differing roles, including those that advise ministers and others which carry out executive or regulatory functions, and they work within a strategic framework set by ministers. As part of the reform programme, all NDPBs have been examined to ensure that they perform a necessary role.</p>
+<p>The Cabinet Office report Public bodies provides lists of all NDPBs and headline information on the NDPB sector. This data is presented on these pages.</p>
+
+<p>Each Department has its own public body. These are presented in the table below</p>
+
+{% for department_entry in page.data %}
+<h3>{{ department_entry[0] }}</h3>
 <table>
-  {% for department in page.departments %}
-  <tr>
-    <td><a href="./{{department.cleanname}}/">{{ department.name }} </td>
-  </tr>
-  {% endfor %}
+  <thead>
+    <tr>
+      <th>Name</th><th>Funding</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for public_body in department_entry[1] %}
+    <tr>
+      <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td><td>£{{ public_body['government-funding'] | money }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
+{% endfor %}
+
 <span> Data available under the Open Government License </span>

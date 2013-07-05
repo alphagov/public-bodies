@@ -122,11 +122,13 @@ def cleanRecord(record):
 
     # Transfer verbatim fields
     renamed_record["name"] = record["name"]
+    renamed_record["clean-name"] = cleanName(record["name"])
     renamed_record["description"] = record["description-terms-of-reference"]
     renamed_record["chair"] = record["chair"]
     renamed_record["chief-executive"] = record["chief-executive-secretary"]
     
     renamed_record["department"] = record["department"]
+    renamed_record["clean-department"] = cleanName(record["department"])
     renamed_record["email"] = record["email"]
     renamed_record["website"] = record["website"]
     renamed_record["phone"] = record["phone"]

@@ -1,5 +1,28 @@
 ---
 layout: default
 ---
-<h2>{{ page.data.department }}</h2>
+<h1>Expenditure</h1>
+<h2>Budget: £{{page.data['government-funding']}}</h2>
+<h2>Expenditure: £{{page.data['total-gross-expenditure']}}</h2>
+<h3>£{{page.data['chief-executive-remuneration']}}</h3>
+<h4>{{page.data.chief-executive}}</h4>
+<h5>Chief Executive</h5>
+
+
+<h3>£{{page.data['chairs-remuneration']}}</h3>
+<h4>{{page.data.chair}}</h4>
+<h5>Chair Person</h5>
+
+<h1>Description</h1>
+
+<p>{{page.data.description}}</p>
+
+<h1>Contact</h1>
+
+<p>Web: {{page.data.website}}</p>
+<p>Email: {{page.data.email}}</p>
+<p>Telelphone: {{page.data.phone}}</p>
+<p>Post: {{page.data.address}}</p>
+
 <span> Data available under the Open Government License </span>
+
