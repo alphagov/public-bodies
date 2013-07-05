@@ -20,10 +20,15 @@ def cleanFinanceNumber(financeNumber):
     matches = re.findall('[0-9,]+', financeNumber)
     if(len(matches) == 0):
         return 0
-    elif(len(matches) == 1):
-        return int(matches[0].replace(",", ""))
     else:
-        return 0
+        numbers = []
+        for match in matches:
+            try:
+                numbers.append(int(match.replace(",", "")))
+            except ValueError:
+                pass
+        return sum(numbers) / len(matches)
+        
 
 def cleanBool(boolStr):
     has_yes = "yes" in boolStr.lower()
