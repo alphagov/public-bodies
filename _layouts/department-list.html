@@ -1,0 +1,11 @@
+---
+layout: default
+---
+<table>
+  {% for department in page.departments %}
+  <tr>
+    <td><a href="./{{department.cleanname}}/">{{ department.name }} </td>
+  </tr>
+  {% endfor %}
+</table>
+<span> Data available under the Open Government License </span>

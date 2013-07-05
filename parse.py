@@ -6,6 +6,7 @@ import os
 import argparse
 import string
 import re
+from collections import defaultdict
 import locale
 from jekyll import Markdown
 
@@ -13,6 +14,16 @@ from jekyll import Markdown
 locale.setlocale(locale.LC_ALL, 'en_GB')
 
 # Convert a document from CSV to JSON
+
+
+def cleanFinanceNumber(financeNumber):
+    matches = re.findall('[0-9,]+', financeNumber)
+    if(len(matches) == 0):
+        return 0
+    elif(len(matches) == 1):
+        return int(matches[0].replace(",", ""))
+    else:
+        return 0
 
 def cleanBool(boolStr):
     has_yes = "yes" in boolStr.lower()
@@ -40,7 +51,12 @@ def csvToRecords(fn):
     '''Convert a document into a list of dicts'''
     with open(fn, 'r') as csvFile:
         dictReader = csv.DictReader(csvFile)
-        return [cleanRecord(record) for record in dictReader]
+        records = [cleanRecord(record) for record in dictReader]
+        d = defaultdict(list)
+        for record in records:
+            d[record['department']].append(record)
+
+        return d
 
 def cleanMoney(monStr):
     return cleanFinanceNumber(monStr)
@@ -149,95 +165,28 @@ def generatePublicBodyIndex(record):
     return retValue
 
 def generateDepartmentIndex(records, d):
-    depts = set([record["department"] for record in records])
-    for department in depts:
+    depts = records.keys()
+    for department, deptBodies in records.items():
         deptFileName = cleanName(department)
-        deptBodies = [record for record in records if record["department"] == department]
         with open(d + '/' + deptFileName + '/index.json', 'w') as outFile:
-            outFile.write(json.dumps(deptBodies))
-        with open(d + '/' + deptFileName + '/index.md', 'w') as outFile:
-            m = Markdown()
-            m.yamlHeader(department, categories='Public Bodies')
-            m.tableStart()
-            m.tableHeader(['Public Body', "Total Expenditure"])
-            for body in deptBodies:
-                m.tableRowStart()
-                
-                m.tableCellStart()
-                m.htmlLink(body["name"], './' + cleanName(body["name"]) +'.html')
-                m.tableCellEnd()
+            outFile.write(json.dumps({"name" : department,
+                                      "bodies": deptBodies}))
 
-                
-                m.tableCellStart()
-                m.write("£" + format(body["total-gross-expenditure"], ',.0f'))
-                m.tableCellEnd()
-
-                m.tableRowEnd()
-            outFile.write(m.getvalue())
-            m.close()
-
-def cleanFinanceNumber(financeNumber):
-    matches = re.findall('[0-9,]+', financeNumber)
-    if(len(matches) == 0):
-        return 0
-    elif(len(matches) == 1):
-        return int(matches[0].replace(",", ""))
-    else:
-        return 0
-    
-
-def generateMainIndex(records, d):
-    depts = set([record["department"] for record in records])
-    with open(d + '/index.md', 'w') as outFile:
-        m = Markdown()
-        m.yamlHeader("Public Bodies", layout='default-visualised')
-        m.tableStart(htmlClass="barchart-table")
-        m.tableHeader(['Department', 'Bodies', 'Annual Total Expenditure'])
-        for department in depts:
-            bodies = [body for body in records if body['department'] == department]
-            totalExpenditure = sum(body['total-gross-expenditure'] for body in bodies)
-            deptFileName = cleanName(department)
-            deptBodyCount = str(len(bodies))
-            deptTotalExpenditure = "£" + format(totalExpenditure, ',.0f')
-            deptURL = './' + deptFileName + '/index.html'
-
-            m.tableRowStart({'data-bodies':deptBodyCount, 'data-expenditure':totalExpenditure, 'data-name':department, 'data-url':deptURL})
-
-            m.tableCellStart()
-            m.htmlLink(department, deptURL)
-            m.tableCellEnd()
-
-            m.tableCellStart()
-            m.write(deptBodyCount)
-            m.tableCellEnd()
-            
-            m.tableCellStart()
-            m.write(deptTotalExpenditure)
-            m.tableCellEnd()
-
-            m.tableRowEnd()
-            m.line()
-        
-        m.tableEnd()
-        outFile.write(m.getvalue())
-        m.close()    
 def cleanName(name):
     tidied_name = ''.join(ch for ch in name if ch not in set(string.punctuation))
     return '-'.join(tidied_name.lower().split())
     
 def outputRecords(records, d):
     '''Output grouped records to subfolders and a master json'''
-    for record in records:
-        deptFileName = cleanName(record["department"])
+    for department, deptRecords in records.items():
+        deptFileName = cleanName(department)
         if not os.path.isdir(deptFileName):
             os.mkdir(deptFileName)
-        with open(d + '/' + deptFileName + '/' + cleanName(record["name"]) + ".json", 'w') as outFile:
-            outFile.write(json.dumps(record))
-        with open(d + '/' + deptFileName + '/' + cleanName(record["name"]) + ".md", 'w') as outFile:
-            outFile.write(generatePublicBodyIndex(record))
+        for record in deptRecords:
+            with open(d + '/' + deptFileName + '/' + cleanName(record["name"]) + ".json", 'w') as outFile:
+                outFile.write(json.dumps(record))
     with open('index.json', 'w') as outFile:
-        outFile.write(json.dumps(records))
-    generateMainIndex(records, d)
+        outFile.write(json.dumps({'all_bodies' : records}))
     generateDepartmentIndex(records, d)
 
 if __name__ == "__main__":
