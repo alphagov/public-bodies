@@ -86,7 +86,7 @@ def cleanPbReform(s):
     elif "Under Consideration" in s:
         return "under_consideration"
     else:
-        return "unknown"
+        return "retain"
     
 def cleanRecord(record):
     '''Clean up the record'''

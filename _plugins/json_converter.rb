@@ -46,7 +46,9 @@ module Jekyll
       self.read_yaml(File.join(base, '_layouts'), 'department-list.html')
       self.data['title'] = "Non Departmental Public Bodies"
       self.data['departments'] = json['all_bodies'].keys.map { |departmentName| {"name" => departmentName, "cleanname" => cleanName(departmentName)}}
-      self.data['data'] = json['all_bodies']
+      self.data['data'] = json['all_bodies'].keys.each_with_object({}) { |departmentName, hsh|
+        hsh[departmentName] = json['all_bodies'][departmentName].sort { |body1, body2|
+          body1['government_funding'] <=> body2['government_funding']}}
     end
   end
 

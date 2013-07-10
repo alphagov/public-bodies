@@ -1,0 +1,10 @@
+svg.barchart {
+    height:400px;
+    width:960px;
+}
+
+svg.areachart {
+    width:960px;
+    height:500px;
+}
+

@@ -65,32 +65,37 @@ function deptColor(d) {
     }
     else if(dept == "Wales Office") {
 	return  "#a33038";
-    }
-    else {
+    } else {
 	return "#0076c0";//Some departments we might not know a colour for ("Northern Ireland Office"), so use HM Government (because that isn't incorrect)
     }
 }
 
 $(function() {
+    var svg = d3.select('svg.areachart')
+    var box = svg[0][0].viewBox.baseVal;
+    var width = box.width;
+    var height = box.height;
 
-    var data = {children : $('.barchart-table > tbody > tr')
+    var data = {children : $('#fundingtable tr.dataline')
 		.map(function() { return {dataset: this.dataset,
-					  color: deptColor(this.dataset.name)} })};
+					  name: this.dataset.name,
+					  funding: parseInt(this.dataset.funding),
+					  color: deptColor(this.dataset.department)} })
+		.filter(function(index, value) { return value.funding > 10000000})};
 
-    var svg = d3.select('.vis.areachart')
-	.append('svg')
-    	.attr('height', '400')
-	.attr('viewbox', '0 0 600 400');
 
+    var treemapwidth = width - 400;
     var treemap = d3.layout.treemap()
-	.sort(function(a, b) { return a.dataset.expenditure - b.dataset.expenditure })
-	.size([600, 400])
+	.sort(function(a, b) { return a.funding - b.funding })
+	.size([treemapwidth, height])
 	.round(true)
-	.value(function(d) { return parseInt(d.dataset.expenditure); });
+	.value(function(d) { return d.funding; });
 
     var nodes = treemap(data);
 
-    svg.selectAll("rect")
+    var group1 = svg.append("g")
+    
+    group1.selectAll("rect")
 	.data(nodes)
 	.enter()
 	.append("rect")
@@ -100,4 +105,28 @@ $(function() {
 	.attr("height", function(d) { return d.dy } )
 	.style("fill", function(d) { return d.color; })
 	.style("stroke", "white");
+
+    var departments = $('th.departmentheader');
+    var group2 = svg.append("g");
+
+    var scale = d3.scale.linear().domain([0, departments.length]).range([0, height]);
+
+    group2.selectAll("g")
+	.data(departments)
+	.enter()
+	.append("text")
+	.attr("x", treemapwidth + 25)
+	.attr("y", function(d, i) { return scale(i) + 12; })
+	.text(function(d) { return d.dataset.name });
+    group2.selectAll("g")
+	.data(departments)
+	.enter()
+	.append("rect")
+	.attr("x", treemapwidth + 10)
+	.attr("y", function(d, i) { return scale(i) + 1; })
+	.attr("width", 12)
+    	.attr("height", 12)
+	.style("stroke", "black")
+	.style("fill", function(d) { return deptColor(d.dataset.name); })
+	.text(function(d) { return d.dataset.name })
 });
