@@ -83,8 +83,7 @@ function drawChart(err, json) {
 	.attr('width', function(d, i) { return heightScale(d.value) - 170; })
 	.attr('height', function(d, i) { return barwidth; })
 	.attr('y', function(d, i) { return widthScale(i)})
-	.attr('x', function(d, i) { return heightScale(0) })
-	.style('stroke', 'black');
+	.attr('x', function(d, i) { return heightScale(0) });
 
 
     bars.selectAll('text')
