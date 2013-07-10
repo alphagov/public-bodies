@@ -17,16 +17,22 @@ page.css: page.css
 
 <p>Each Department has its own public bodies. These are presented in the table below</p>
 <table id="fundingtable">
-  {% for department_entry in page.data %}
-  <tr>
-    <th class="departmentheader" data-name="{{department_entry[0]}}" colspan="2">{{ department_entry[0] }}</th>
-  </tr>
-  {% for public_body in department_entry[1] %}
-  <tr class="dataline" data-department="{{public_body['department']}}" data-funding="{{public_body['government-funding']}}" data-name="{{public_body['name']}}">
-    <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td><td>£{{ public_body['government-funding'] | money }}</td>
-  </tr>
-  {% endfor %}
+  <thead>
+    <th>Name</th><th>Department</th><th>Funding</th><th>Status</th>
+  </thead>
+  <tbody>
+    {% for department_entry in page.data %}
+    {% for public_body in department_entry[1] %}
+    <tr class="dataline" data-department="{{public_body['department']}}" data-funding="{{public_body['government-funding']}}" data-name="{{public_body['name']}}">
+      <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td>
+      <td>{{public_body['department']}}</td>
+      <td>£{{ public_body['government-funding'] | money }}</td>
+      <td>{{public_body['status']}}</td>
+    </tr>    
+    {% endfor %}
+    {% endfor %}
+  </tbody>
 
-  {% endfor %}
+
 </table>
 <span> Data available under the Open Government License </span>
