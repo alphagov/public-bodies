@@ -30,7 +30,7 @@ page.css: page.css
   </thead>
   <tbody>
     {% for department_entry in page.data %}
-    {% for public_body in department_entry[1] %}
+    {% for public_body in department_entry['values'] %}
     <tr class="dataline" data-department="{{public_body['department']}}" data-funding="{{public_body['government-funding']}}" data-name="{{public_body['name']}}">
       <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td>
       <td>{{public_body['department']}}</td>

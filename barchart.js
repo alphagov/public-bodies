@@ -10,30 +10,26 @@ function drawChart(err, json) {
     var merged = 0;
     var abolished = 0;
 
-    for (departmentID in departments) {
-	if (typeof department !== 'function') {
-	    var department = departments[departmentID];
-	    for(bodyID in department) {
-		var body = department[bodyID];
-		total += 1;
-		if(body['pb-reform'] == 'merge') {
-		    merged += 1;
-		}
-		else if (body['pb-reform'] != 'retain') {
-		    abolished += 1;
-		}
+    $.each(departments, function(i, bodyObject) {
+	bodies = bodyObject.values;
+	$.each(bodies, function(i, body) {
+	    total += 1;
+	    if(body['pb-reform'] == 'merge') {
+		merged += 1;
 	    }
-	}
-    }
-
+	    else if (body['pb-reform'] != 'retain') {
+		abolished += 1;
+	    }
+	})
+	    });
 
     var svg = d3.select('svg.barchart');
 
     var box = svg[0][0].viewBox.baseVal;
     var width = box.width;
     var height = box.height;
-    
-    
+
+
     var barData = [
 	{name : 'Original Total (2009)', value : total},
 	{name : 'Abolished', value : abolished},
@@ -41,7 +37,7 @@ function drawChart(err, json) {
 	{name : 'Retained', value : total-abolished}
     ];
 
-    
+
     var widthScale = d3.scale.linear().domain([0, barData.length]).rangeRound([25, height-25]);
     var heightScale = d3.scale.linear().domain([0, total]).rangeRound([170, width-20]);
 
@@ -52,7 +48,7 @@ function drawChart(err, json) {
     var barwidth = height / (2 * barData.length);
 
     var ticks = 15;
-    
+
     lines.selectAll('line')
 	.data(heightScale.ticks(ticks))
 	.enter()

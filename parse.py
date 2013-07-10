@@ -192,8 +192,9 @@ def outputRecords(records, d):
         for record in deptRecords:
             with open(d + '/' + deptFileName + '/' + cleanName(record["name"]) + ".json", 'w') as outFile:
                 outFile.write(json.dumps(record))
-    with open('index.json', 'w') as outFile:
-        outFile.write(json.dumps({'all_bodies' : records}))
+        with open('index.json', 'w') as outFile:
+
+            outFile.write(json.dumps({'all_bodies' : [{'name':k, 'values':v} for k,v in records.items()]}))
     generateDepartmentIndex(records, d)
 
 if __name__ == "__main__":

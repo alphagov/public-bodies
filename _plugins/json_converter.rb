@@ -45,10 +45,8 @@ module Jekyll
       self.process(@name)
       self.read_yaml(File.join(base, '_layouts'), 'department-list.html')
       self.data['title'] = "Non Departmental Public Bodies"
-      self.data['departments'] = json['all_bodies'].keys.map { |departmentName| {"name" => departmentName, "cleanname" => cleanName(departmentName)}}
-      self.data['data'] = json['all_bodies'].keys.each_with_object({}) { |departmentName, hsh|
-        hsh[departmentName] = json['all_bodies'][departmentName].sort { |body1, body2|
-          body1['government_funding'] <=> body2['government_funding']}}
+      self.data['departments'] = json['all_bodies'].map { |department| {"name" => department["name"], "cleanname" => cleanName(department["name"])}}
+      self.data['data'] = json['all_bodies']
     end
   end
 
