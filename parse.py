@@ -16,19 +16,7 @@ locale.setlocale(locale.LC_ALL, 'en_GB')
 # Convert a document from CSV to JSON
 
 
-def cleanFinanceNumber(financeNumber):
-    matches = re.findall('[0-9,]+', financeNumber)
-    if(len(matches) == 0):
-        return 0
-    else:
-        numbers = []
-        for match in matches:
-            try:
-                numbers.append(int(match.replace(",", "")))
-            except ValueError:
-                pass
-        return sum(numbers) / len(matches)
-        
+
 
 def cleanBool(boolStr):
     has_yes = "yes" in boolStr.lower()
@@ -41,17 +29,32 @@ def cleanBool(boolStr):
         return False
 def cleanNumber(numStr):
     numStr = numStr.replace('*', '')
+    numStr = numStr.replace(',', '')
     try:
         return int(numStr)
     except ValueError:
         if '-' in numStr:
             return 0
         else:
-            nums = re.findall('[0-9]+', numStr)
+            nums = re.findall('[0-9 k]+', numStr)
+            nums = [num.replace(' ', '') for num in nums]
+            nums = [num.replace('k', '000') for num in nums]
             if nums:
-                return sum([int(num) for num in nums])
+                if 'a day' in numStr:
+                    cleannumlist = [365*int(num) for num in nums if num != '' and num != '-' and int(num) > 100]
+                else:
+                    cleannumlist = [int(num) for num in nums if num != '' and num != '-' and int(num) > 1000]
+                if(len(cleannumlist) > 0):
+                    return sum(cleannumlist)/len(cleannumlist)
+                else:
+                    return 0
+            if numStr in ["None", "N/A", "No", "Multiple"]:
+                return 0
         raw_input("Error: " + numStr)
         return 0
+
+cleanFinanceNumber = cleanNumber
+        
 def csvToRecords(fn):
     '''Convert a document into a list of dicts'''
     with open(fn, 'r') as csvFile:
