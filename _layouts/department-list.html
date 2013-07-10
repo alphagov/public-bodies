@@ -14,9 +14,10 @@ page.css: page.css
 <svg class="areachart" viewBox="0 0 1000 500" preserveAspectRatio="XMidYMid meet"></svg>
 <script src="/assets/toolkit/javascripts/vendor/d3/d3.v3.js"></script>
 <script src="barchart.js"></script>
+<script src="sorttable.js"></script>
 
 <p>Each Department has its own public bodies. These are presented in the table below</p>
-<table id="fundingtable">
+<table class="sortable" id="fundingtable">
   <thead>
     <th>Name</th><th>Department</th><th>Funding</th><th>Status</th>
   </thead>
@@ -26,8 +27,8 @@ page.css: page.css
     <tr class="dataline" data-department="{{public_body['department']}}" data-funding="{{public_body['government-funding']}}" data-name="{{public_body['name']}}">
       <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td>
       <td>{{public_body['department']}}</td>
-      <td>£{{ public_body['government-funding'] | money }}</td>
-      <td>{{public_body['status']}}</td>
+      <td sorttable_customkey="{{ public_body['government-funding']}}">£{{ public_body['government-funding'] | money }}</td>
+      <td>{{public_body['pb-reform']}}</td>
     </tr>    
     {% endfor %}
     {% endfor %}
