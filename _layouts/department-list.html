@@ -6,15 +6,28 @@ page.css: page.css
 <h1>Non-Departmental Public Bodies</h1>
 <p>Non-departmental public bodies (NDPBs) are organisations that sit at ‘arm’s-length’ from ministers and have varying degrees of operational autonomy and independence from ministers. They have differing roles, including those that advise ministers and others which carry out executive or regulatory functions, and they work within a strategic framework set by ministers. As part of the reform programme, all NDPBs have been examined to ensure that they perform a necessary role.</p>
 <p>The Cabinet Office report Public bodies provides lists of all NDPBs and headline information on the NDPB sector. This data is presented on these pages.</p>
-
-
 <p>In 2011 the Public Bodies Act 2011 was introduced. This allowed the Government to shutdown, merge or reform public bodies.</p>
-<svg class="barchart" viewBox="0 0 960 400" preserveAspectRatio="XMidYMid meet"></svg>
+<svg class="barchart" viewBox="0 0 960 200" preserveAspectRatio="XMidYMid meet"></svg>
 <p>Some Public Bodies are given money by the Government. Others are funded privately. For instance, a public body that maintains lighthouses would collect its funds from the sailors that they help</p>
-<svg class="areachart" viewBox="0 0 1000 500" preserveAspectRatio="XMidYMid meet"></svg>
-<script src="/assets/toolkit/javascripts/vendor/d3/d3.v3.js"></script>
+<svg class="groupedbar" viewBox="0 0 960 200" preserveAspectRatio="XMidYMid meet"></svg>
+<select id="bar-value">
+  <option value='chairs-remuneration'>Chairs Salary</option>
+  <option value='chief-executive-remuneration'>Chief Executive Salary</option>
+  <option value='total-gross-expenditure'>Money Spent</option>
+  <option value='staff-employed-fte'>Number of Staff</option>
+  <option value='government-funding'>Money from Government</option>
+</select>
+<br>
+<input type="radio" class="radioLog" name="log" value="log">Use Log Scale</input>
+<input type="radio" class="radioLog" checked name="log" value="norm">Use Normal Scale</input>
+<br>
+<input type="checkbox" id="show-zero">Show Zero Values</input>
 
+<script src="groupedbar.js"></script>
 <script src="barchart.js"></script>
+
+<script src="/assets/toolkit/javascripts/vendor/d3/d3.v3.js"></script>
+<script src="chroma.min.js"></script>
 <script src="numeral.js"></script>
 <script src="sorttable.js"></script>
 <script>
