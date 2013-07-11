@@ -33,7 +33,7 @@ function InteractiveBarChart(svg) {
 
 	    var heightScale;
 	    if(log) {
-		heightScale = d3.scale.log().domain([max, 1]).range([5, height - 5]);
+		heightScale = d3.scale.log().base(2).domain([max, 1]).range([5, height - 5]);
 	    } else {
 		heightScale = d3.scale.linear().domain([max, 1]).range([5, height - 5]);
 	    }
