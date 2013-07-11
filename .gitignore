@@ -4,3 +4,4 @@ _site
 index.json
 index.md
 *~
+.ruby-version
