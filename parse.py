@@ -13,9 +13,6 @@ locale.setlocale(locale.LC_ALL, 'en_GB')
 
 # Convert a document from CSV to JSON
 
-
-
-
 def cleanBool(boolStr):
     has_yes = "yes" in boolStr.lower()
     has_no = "no" in boolStr.lower()
@@ -185,36 +182,18 @@ def cleanName(name):
     return '-'.join(tidied_name.lower().split())
     
 def outputRecords(records, d):
-    '''Output grouped records to subfolders and a master json'''
-    for department, deptRecords in records.items():
-        deptFileName = cleanName(department)
-        if not os.path.isdir(deptFileName):
-            os.mkdir(deptFileName)
-        for record in deptRecords:
-            with open(d + '/' + deptFileName + '/' + cleanName(record["name"]) + ".json", 'w') as outFile:
-                outFile.write(json.dumps(record))
-        with open('index.json', 'w') as outFile:
-
-            outFile.write(json.dumps({'all_bodies' : [{'name':k, 'values':v} for k,v in records.items()]}))
-    generateDepartmentIndex(records, d)
+    '''Output master json file'''
+    with open('index.json', 'w') as outFile:
+        outFile.write(json.dumps({'all_bodies' : [{'name':k, 'values':v} for k,v in records.items()]}))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description = "Process NDPB data into json files"
     )
     parser.add_argument('filename')
-    parser.add_argument('--json', action='store_true', default=False)
-    parser.add_argument('--pretty', action='store_true', default=False)
-    parser.add_argument('--csv', action='store_true', default=False)
+
     args = parser.parse_args()
+    
     data = csvToRecords(args.filename)
-    if args.json:
-        if args.pretty:
-            print(json.dumps(data, indent=4, sort_keys=True))
-        else:
-            print(json.dumps(data))
-    elif args.csv:
-        print 'csv'
-    else:
-        outputRecords(data, os.getcwd())
+    outputRecords(data, os.getcwd())
     

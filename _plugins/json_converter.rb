@@ -30,7 +30,7 @@ module Jekyll
       self.process(@name)
       self.read_yaml(File.join(base, '_layouts'), 'department.html')
       self.data['title'] = json["name"]
-      self.data['bodies'] = json['bodies']
+      self.data['bodies'] = json['values']
     end
   end
   class HomePage < Page
@@ -59,11 +59,8 @@ module Jekyll
     def generate(site)
       site.static_files.each do |file|
         in_path = file.path
-        if File.extname(in_path).downcase == ".json"
-          page = generatePage(file.path, site)
-          if page != nil
-            site.pages << page
-          end
+        if File.fnmatch('*/public-bodies/index.json', in_path)
+          generatePage(file.path, site)
         end
       end
     end
@@ -74,16 +71,17 @@ module Jekyll
       file.close
       json = JSON.parse jsonstring
       if json.has_key? 'all_bodies'
-        return self.generateHomePage json, site
-      elsif json.has_key? 'bodies'
-        return self.generateDeptPage json, site
-      else
-        return self.generateBodyPage json, site
+        site.pages << self.generateHomePage(json, site)
+        json['all_bodies'].each do |department|
+          site.pages << self.generateDeptPage(department, site)
+          department['values'].each do |body|
+            site.pages << self.generateBodyPage(body, site)
+          end
+        end
       end
     end
 
     def generateDeptPage(json, site)
-      
       return DepartmentPage.new(site, site.source, cleanName(json["name"]) , json)
     end
     def generateHomePage(json, site)
