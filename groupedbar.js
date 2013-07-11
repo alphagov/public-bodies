@@ -30,15 +30,16 @@ function InteractiveBarChart(svg) {
 	    var bodyValues = bodies.map(function (d) { return parseInt(d[field])});
 
 	    var max = Math.max.apply(Math, bodyValues)
+	    var min = Math.min.apply(Math, bodyValues)
 
 	    var heightScale;
 	    if(log) {
-		heightScale = d3.scale.log().base(2).domain([max, 1]).range([5, height - 5]);
+		heightScale = d3.scale.log().base(2).domain([max, min]).range([5, height - 5]);
 	    } else {
 		heightScale = d3.scale.linear().domain([max, 1]).range([5, height - 5]);
 	    }
 
-	    var colScale = chroma.scale(['#85994b', '#b10e1e']).domain([processfunc(1), processfunc(max)]);
+	    var colScale = chroma.scale(['#85994b', '#b10e1e']).domain([processfunc(min), processfunc(max)]);
 
 	    if(this.last != field || showZero != this.showedZero) {
 		rects = barGroup.selectAll('rect')
@@ -77,14 +78,14 @@ function InteractiveBarChart(svg) {
 	    
 	    if(this.last != field) {
 		rects
-		    .attr('y', heightScale(1))
+		    .attr('y', heightScale.range()[1])
 		    .attr('height', 0)
 	    }
 	    rects
 		.transition()
 		.delay(function(d,i) { return i * 1 })
 		.attr('y', function(d) { return heightScale(d[field]) })
-		.attr('height', function(d) { return heightScale(1) - heightScale(d[field]) })
+		.attr('height', function(d) { return heightScale.range()[1] - heightScale(d[field]) })
 	    ;
 	    last = field;
 	    showedZero = showZero;
@@ -102,12 +103,6 @@ function InteractiveBarChart(svg) {
 		.orient("left")
 		.ticks(5);
 
-	    this.axisGroupX.append('line')
-		.attr('x1', barScale.range()[0])
-	    	.attr('x2', barScale.rangeExtent()[1])
-		.attr('y1', heightScale(1))
-	    	.attr('y2', heightScale(1))
-		.style('stroke', 'black')
 	    this.axisGroupY.call(Yaxis);
 	   
 	    
