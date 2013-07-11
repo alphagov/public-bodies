@@ -48,8 +48,6 @@ def cleanNumber(numStr):
         raw_input("Error: " + numStr)
         return 0
 
-cleanFinanceNumber = cleanNumber
-        
 def csvToRecords(fn):
     '''Convert a document into a list of dicts'''
     with open(fn, 'r') as csvFile:
@@ -60,9 +58,6 @@ def csvToRecords(fn):
             d[record['department']].append(record)
 
         return d
-
-def cleanMoney(monStr):
-    return cleanFinanceNumber(monStr)
 
 def cleanClassification(classStr):
     if classStr == 'Executive NDPB':
@@ -118,10 +113,10 @@ def cleanRecord(record):
     renamed_record["_chief-executive-secretart-remuneration"] = record["chief-executive-secretart-remuneration"]
     renamed_record["_chairs-remuneration-pa-unless-otherwise-stated"] = record["chairs-remuneration-pa-unless-otherwise-stated"]
 
-    renamed_record["total-gross-expenditure"] = cleanMoney(record["total-gross-expenditure"])
-    renamed_record["government-funding"] = cleanMoney(record["government-funding"])
-    renamed_record["chief-executive-remuneration"] = cleanMoney(record["chief-executive-secretart-remuneration"])
-    renamed_record["chairs-remuneration"] = cleanMoney(record["chairs-remuneration-pa-unless-otherwise-stated"])
+    renamed_record["total-gross-expenditure"] = cleanNumber(record["total-gross-expenditure"])
+    renamed_record["government-funding"] = cleanNumber(record["government-funding"])
+    renamed_record["chief-executive-remuneration"] = cleanNumber(record["chief-executive-secretart-remuneration"])
+    renamed_record["chairs-remuneration"] = cleanNumber(record["chairs-remuneration-pa-unless-otherwise-stated"])
 
     # Transfer verbatim fields
     renamed_record["name"] = record["name"]
@@ -148,35 +143,6 @@ def cleanRecord(record):
 
     return renamed_record
     
-def generatePublicBodyIndex(record):
-    m = Markdown()
-    m.yamlHeader(record["name"])
-    m.tableStart()
-
-    m.tableRowStart()
-    m.tag('th', "Name", dict())
-    m.tag('td', record["name"], dict())
-    m.tableRowEnd()
-    
-    m.tableRowStart()
-    m.tag('th', "Department", dict())
-    m.tag('td', record["department"], dict())
-    m.tableRowEnd()
-    m.tableEnd()
-    
-    
-    retValue = m.getvalue()
-    m.close()
-    return retValue
-
-def generateDepartmentIndex(records, d):
-    depts = records.keys()
-    for department, deptBodies in records.items():
-        deptFileName = cleanName(department)
-        with open(d + '/' + deptFileName + '/index.json', 'w') as outFile:
-            outFile.write(json.dumps({"name" : department,
-                                      "bodies": deptBodies}))
-
 def cleanName(name):
     tidied_name = ''.join(ch for ch in name if ch not in set(string.punctuation))
     return '-'.join(tidied_name.lower().split())
