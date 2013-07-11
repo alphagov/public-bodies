@@ -1,6 +1,11 @@
 svg.barchart, svg.groupedbar {
-    height:200px;
     width:920px;
+}
+svg.barchart {
+    height: 200px;
+}
+svg.groupedbar {
+    height: 400px;
 }
 
 svg.areachart {
