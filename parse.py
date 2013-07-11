@@ -8,8 +8,6 @@ import string
 import re
 from collections import defaultdict
 import locale
-from jekyll import Markdown
-
 
 locale.setlocale(locale.LC_ALL, 'en_GB')
 
