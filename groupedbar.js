@@ -101,7 +101,8 @@ function InteractiveBarChart(svg) {
 	    var Yaxis = d3.svg.axis()
 		.scale(heightScale)
 		.orient("left")
-		.ticks(5);
+		.ticks(5)
+		.tickFormat(d3.format(",.0f"));
 
 	    this.axisGroupY.call(Yaxis);
 	   
