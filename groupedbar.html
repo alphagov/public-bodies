@@ -1,17 +1,19 @@
 ---
 layout: default-public-bodies
 ---
+<svg class="groupedbar" viewBox="0 0 960 600" style="width: 960px; height: 600px;"></svg>
 <select id="bar-value">
-  <option value='chairs-remuneration'>Chairs Remuneration</option>
-  <option value='chief-executive-remuneration'>Chief Executive Remuneration</option>
-  <option value='total-gross-expenditure'>Total Gross Expenditure</option>
-  <option value='staff-employed-fte'>Staff Employed</option>
-  <option value='government-funding'>Government Funding</option>
+  <option value='chairs-remuneration'>Chairs Salary</option>
+  <option value='chief-executive-remuneration'>Chief Executive Salary</option>
+  <option value='total-gross-expenditure'>Money Spent</option>
+  <option value='staff-employed-fte'>Number of Staff</option>
+  <option value='government-funding'>Money from Government</option>
 </select>
+<br>
 <input type="radio" class="radioLog" name="log" value="log">Use Log Scale</input>
 <input type="radio" class="radioLog" checked name="log" value="norm">Use Normal Scale</input>
+<br>
 <input type="checkbox" id="show-zero">Show Zero Values</input>
-<svg class="groupedbar" viewBox="0 0 960 600" style="width: 960px; height: 600px;"></svg>
 <script src="/assets/toolkit/javascripts/vendor/d3/d3.v3.js"></script>
 <script src="groupedbar.js"></script>
 <script src="chroma.min.js"></script>
