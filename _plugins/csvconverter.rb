@@ -116,7 +116,7 @@ class PublicBody
     @clean_department = self.webString(record["Department"])
     @clean_name = self.webString(record["Name"])
     @department = record["Department"]
-    @description = record["Description"]
+    @description = record["Description / Terms of Reference"]
     @email = record["email"]
     @government_funding = self.cleanNumber(@_government_funding)
     @government_funding_formatted = self.formatMoney(@government_funding)
