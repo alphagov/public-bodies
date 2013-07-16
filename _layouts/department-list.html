@@ -24,6 +24,7 @@ page.css: page.css
 <script src="groupedbar.js"></script>
 <script src="/barchart.js"></script>
 <p>Each Department has its own public bodies. These are presented in the table below</p>
+Filter by Name: <input type="text" id="table-filter"></input>
 <table id="fundingtable">
   <thead>
     <th>Name</th><th>Department</th><th>Funding</th><th>OCPA Regulated</th><th>Public Meetings</th><th>Public Minutes</th><th>Register of Interests</th><th>Regulatory Function</th>
@@ -58,6 +59,7 @@ page.css: page.css
 
 </table>
 <span> Data available under the Open Government License </span>
+<script src="filtertable.js"></script>
 <script>
   $.tablesorter.addParser({
   id: 'ukcurrency',
@@ -83,5 +85,6 @@ page.css: page.css
   });
   }
   );
+  $('#table-filter').keyup(function() { $('#fundingtable').tfilter($('#table-filter').val()) })
   $(function() { d3.json('index.json', drawGroupedBar('svg.groupedbar', function(e) { return e.map(function(d) { return d.bodies; }) }) ) }) 
 </script>

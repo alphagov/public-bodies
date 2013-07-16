@@ -11,9 +11,9 @@ class PublicBody
   
   def cleanNumber(s)
     multiplier = 1
-    if s.include? 'day'
+    if s.include? 'per day'
       multiplier = 260
-    elsif s.include? 'month'
+    elsif s.include? 'per month'
       multiplier = 12
     end
 

@@ -44,7 +44,6 @@ function InteractiveBarChart(svg) {
 	    if(this.last != field || showZero != this.showedZero) {
 		rects = barGroup.selectAll('rect')
 		    .data(bodies);
-
 		rects.exit()
 		    .remove();
 
