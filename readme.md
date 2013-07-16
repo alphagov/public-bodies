@@ -1,7 +1,5 @@
 Visualisations of public bodies spending
 
-To run, do ./parse.py public-bodies.csv
-Then
-jekyll serve
+Run with jekyll serve. Runs on port 4000.
 
-git clean -xdf (be sure that you have committed changes you want to keep) will tidy up effectively after ./parse
+Previous versions required pre-processing of the csv, this is now done automatically.
