@@ -25,7 +25,7 @@ page.css: page.css
   <tbody>
     {% for public_body in page.data %}
     <tr class="dataline" data-department="{{public_body['department']}}" data-funding="{{public_body['government-funding']}}" data-name="{{public_body['name']}}">
-      <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td>
+      <td><a href="./{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td>
       <td style="font-family:'ntatabularnumbers'">{{ public_body['government-funding-formatted']}}</td>
       <td>
 	{% if public_body['ocpa-regulated'] %}Yes{% else %}No{% endif %}
