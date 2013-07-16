@@ -10,12 +10,24 @@ class PublicBody
   attr_reader :department
   
   def cleanNumber(s)
-    match = s.gsub(/,/, '').scan(/[0-9]+/)
+    multiplier = 1
+    if s.include? 'day'
+      multiplier = 260
+    elsif s.include? 'month'
+      multiplier = 12
+    end
+
+    
+    
+    match = s.gsub(/, /, '').gsub(/,/, '').scan(/[0-9]+/)
     if match.empty?
       return 0
     end
     num = match.map{ |n| n.to_i }.reduce{ |n1, n2| n1 + n2 }
-    return num / match.length
+    num = num / match.length
+    num = num * multiplier
+
+    return num
   end
 
   
