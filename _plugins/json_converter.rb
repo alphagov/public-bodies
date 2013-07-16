@@ -1,6 +1,8 @@
 require "json"
 require "jekyll"
 require "builder"
+require "csv"
+require "./_plugins/csvconverter.rb"
 
 module Jekyll
   class PublicBodyPage < Page
@@ -30,7 +32,7 @@ module Jekyll
       self.process(@name)
       self.read_yaml(File.join(base, '_layouts'), 'department.html')
       self.data['title'] = json["name"]
-      self.data['bodies'] = json['values']
+      self.data['data'] = json['bodies']
     end
   end
   class HomePage < Page
@@ -45,10 +47,71 @@ module Jekyll
       self.process(@name)
       self.read_yaml(File.join(base, '_layouts'), 'department-list.html')
       self.data['title'] = "Non Departmental Public Bodies"
-      self.data['departments'] = json['all_bodies'].map { |department| {"name" => department["name"], "cleanname" => cleanName(department["name"])}}
-      self.data['data'] = json['all_bodies']
+      self.data['departments'] = json.map { |department| {"name" => department["name"], "cleanname" => cleanName(department["name"])}}
+      self.data['data'] = json
     end
   end
+
+  def csvToHash
+    csv = CSV.read('public-bodies.csv')
+    csv = csv.group_by { |dept| dept[:name] }
+    csv.each do |k,v|
+      h[k] = v.map do |b|
+
+        
+        
+        return Hash(b)
+      end
+    end
+    
+      
+  end
+
+  class HomeJSONPage < Page
+    def cleanName(name)
+      return name.downcase.gsub(/ /, '-').gsub(/[^A-Za-z0-9-]/, '')
+    end
+    def initialize(site, base, dir, json)
+      @site = site
+      @base = base
+      @dir = dir
+      @name = "index.json"
+      self.read_yaml(File.join(base, '_layouts'), 'json.json')
+      self.process(@name)
+      @content = JSON.dump(json).to_s
+    end
+  end
+
+  class DepartmentJSONPage < Page
+    def cleanName(name)
+      return name.downcase.gsub(/ /, '-').gsub(/[^A-Za-z0-9-]/, '')
+    end
+    def initialize(site, base, dir, json)
+      @site = site
+      @base = base
+      @dir = dir
+      @name = "index.json"
+      self.read_yaml(File.join(base, '_layouts'), 'json.json')
+      self.process(@name)
+      @content = JSON.dump(json)
+    end
+  end
+  
+  class BodyJSONPage < Page
+    def cleanName(name)
+      return name.downcase.gsub(/ /, '-').gsub(/[^A-Za-z0-9-]/, '')
+    end
+    def initialize(site, base, dir, json)
+      @site = site
+      @base = base
+      @dir = dir
+      @name = self.cleanName(json["name"]) + ".json"
+      self.read_yaml(File.join(base, '_layouts'), 'json.json')
+      self.process(@name)
+      @content = JSON.dump(json)
+    end
+  end
+      
 
   class FrontEndGenerator < Generator
     safe true
@@ -59,36 +122,48 @@ module Jekyll
     def generate(site)
       site.static_files.each do |file|
         in_path = file.path
-        if File.fnmatch('*/public-bodies/index.json', in_path)
+        if File.fnmatch('*/public-bodies/public-bodies.csv', in_path)
           generatePage(file.path, site)
         end
       end
     end
 
     def generatePage(staticfilepath, site)
-      file = File.open(staticfilepath)
-      jsonstring = file.read
-      file.close
-      json = JSON.parse jsonstring
-      if json.has_key? 'all_bodies'
-        site.pages << self.generateHomePage(json, site)
-        json['all_bodies'].each do |department|
-          site.pages << self.generateDeptPage(department, site)
-          department['values'].each do |body|
-            site.pages << self.generateBodyPage(body, site)
-          end
+      csv = CSV.read(staticfilepath, {
+                       :headers => :first_row
+                     })
+      bodies = csv.map { |body| PublicBody.new(body) }.group_by { |body| body.department }.map{ |name, bodies| {'name' => name, 'bodies' => bodies.map{|body| body.to_hash } } }
+
+      site.pages << self.generateHomePage(bodies, site)
+      site.pages << self.generateHomeJSONPage(bodies, site)
+      bodies.each do |department|
+        site.pages << self.generateDeptPage(department, site)
+        site.pages << self.generateDepartmentJSONPage(department, site)
+        department['bodies'].each do |body|
+          site.pages << self.generateBodyPage(body, site)
+          site.pages << self.generateBodyJSONPage(body, site)
         end
       end
     end
 
+    def generateBodyJSONPage(json, site)
+
+      return BodyJSONPage.new(site, site.source, json["clean-department"], json)
+    end
+    def generateDepartmentJSONPage(json, site)
+      return DepartmentJSONPage.new(site, site.source, cleanName(json["name"]), json)
+    end
     def generateDeptPage(json, site)
       return DepartmentPage.new(site, site.source, cleanName(json["name"]) , json)
     end
     def generateHomePage(json, site)
       return HomePage.new(site, site.source, '.', json)
     end
+    def generateHomeJSONPage(json, site)
+      return HomeJSONPage.new(site, site.source, '.', json)
+    end
     def generateBodyPage(json, site)
-      return PublicBodyPage.new(site, site.source, cleanName(json["department"]), json)
+      return PublicBodyPage.new(site, site.source, json["clean-department"], json)
     end
     def createTable dataRows, headers=[]
       builder = Builder::XmlMarkup.new()

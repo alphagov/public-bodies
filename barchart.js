@@ -1,17 +1,15 @@
-function drawChart(err, json) {
+function drawChart(err, departments) {
     if(err) {
 	alert(err);
 	return;
     }
-
-    var departments = json['all_bodies'];
 
     var total = 0;
     var merged = 0;
     var abolished = 0;
 
     $.each(departments, function(i, bodyObject) {
-	bodies = bodyObject.values;
+	bodies = bodyObject.bodies;
 	$.each(bodies, function(i, body) {
 	    total += 1;
 	    if(body['pb-reform'] == 'merge') {

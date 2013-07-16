@@ -1,28 +1,51 @@
 ---
-layout: default
+layout: default-no-wrapper
 ---
-<h1>Expenditure</h1>
-<h2>Budget: £{{page.data['government-funding']}}</h2>
-<h2>Expenditure: £{{page.data['total-gross-expenditure']}}</h2>
-<h3>£{{page.data['chief-executive-remuneration']}}</h3>
-<h4>{{page.data.chief-executive}}</h4>
-<h5>Chief Executive</h5>
 
+<section id="content" role="main" class="group category-page">
+  <header class="page-header group">
+    <hgroup class="full-width">
+      <h1>{{ page.data.department }}</h1>
+      <h2>{{ page.title }}</h2>
+    </hgroup>
+  </header>
+  <div class="browse-container full-width group">
+    <article>
+      <section>
+	<p>{{page.data.description}}</p>
+      </section>
+      
+      <figure id="spending">
+	<table>
+	  <thead>
+	    <tr><th>Budget</th><th>Total Spent</th></tr>
+	  </thead>
+	  <tbody>
+	  </tbody>
+	  <tr><td>{{page.data['government-funding-formatted']}}</td><td>{{page.data['total-gross-expenditure-formatted']}}</td></tr>
+	</table>
+      </figure>
 
-<h3>£{{page.data['chairs-remuneration']}}</h3>
-<h4>{{page.data.chair}}</h4>
-<h5>Chair Person</h5>
-
-<h1>Description</h1>
-
-<p>{{page.data.description}}</p>
-
-<h1>Contact</h1>
-
-<p>Web: <a href='{{page.data.website}}'>{{page.data.website}}</a></p>
-<p>Email: <a href='mailto:{{page.data.email}}'>{{page.data.email}}</a></p>
-<p>Telelphone: {{page.data.phone}}</p>
-<p>Post: {{page.data.address}}</p>
-
-<span> Data available under the Open Government License </span>
-
+      <figure id="staff">
+	<table>
+	  <thead>
+	    <tr><th>Position</th><th>Person</th><th>Pay</th>
+	  <tbody>
+	    <tr><td>Chief Executive</td><td>{{page.data.chief-executive}}</td><td>{{page.data['chief-executive-remuneration-formatted']}}</td></tr>
+	    <tr><td>Chair Person</td><td>{{page.data.chair}}</td><td>{{page.data['chairs-remuneration-formatted']}}</td></tr>
+	  </tbody>
+	</table>
+      </figure>
+      
+      <h1>Contact</h1>
+      
+      <p>Web: <a href='{{page.data.website}}'>{{page.data.website}}</a></p>
+      <p>Email: <a href='mailto:{{page.data.email}}'>{{page.data.email}}</a></p>
+      <p>Telelphone: {{page.data.phone}}</p>
+      <p>Post: {{page.data.address}}</p>
+      
+      <span> Data available under the Open Government License </span>
+      
+    </article>
+  </div>
+</section>

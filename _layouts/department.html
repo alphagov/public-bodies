@@ -1,11 +1,77 @@
 ---
-layout: default
+layout: default-visualised
+page.css: page.css
 ---
-<table>
-  {% for item in page.bodies %}
-  <tr>
-    <td> {{ item.name }} </td>
-  </tr>
-  {% endfor %}
+<svg class="groupedbar" viewBox="0 0 960 400" preserveAspectRatio="XMidYMid meet"></svg>
+<select id="bar-value">
+  <option value='chairs-remuneration'>Chairs Salary</option>
+  <option value='chief-executive-remuneration'>Chief Executive Salary</option>
+  <option value='total-gross-expenditure'>Money Spent</option>
+  <option value='staff-employed-fte'>Number of Staff</option>
+  <option value='government-funding'>Money from Government</option>
+</select>
+<br>
+<input type="radio" class="radioLog" name="log" value="log">Use Log Scale</input>
+<input type="radio" class="radioLog" checked name="log" value="norm">Use Normal Scale</input>
+<br>
+<input type="checkbox" id="show-zero">Show Zero Values</input>
+
+<script src="/groupedbar.js"></script>
+
+<table id="fundingtable">
+  <thead>
+    <th>Name</th><th>Funding</th><th>OCPA Regulated</th><th>Public Meetings</th><th>Public Minutes</th><th>Register of Interests</th><th>Regulatory Function</th>
+  </thead>
+  <tbody>
+    {% for public_body in page.data %}
+    <tr class="dataline" data-department="{{public_body['department']}}" data-funding="{{public_body['government-funding']}}" data-name="{{public_body['name']}}">
+      <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td>
+      <td style="font-family:'ntatabularnumbers'">{{ public_body['government-funding-formatted']}}</td>
+      <td>
+	{% if public_body['ocpa-regulated'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['public-meetings'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['public-minutes'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['register-of-interests'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['regulatory-function'] %}Yes{% else %}No{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+
 </table>
 <span> Data available under the Open Government License </span>
+<script>
+  $.tablesorter.addParser({
+  id: 'ukcurrency',
+  is: function(s) {
+  return s[0] == '£'
+  },
+  format: function(s) {
+  return s.replace('£', '').replace(/,/g,'');
+  },
+  type:'numeric'
+  }
+  )
+  $(document).ready(function()
+  {
+  $("#fundingtable").tablesorter({
+  headers : {
+  2: {
+  sorter:'ukcurrency'
+  }
+  },
+  sortList: [[0,0]]
+
+  });
+  }
+  );
+</script>

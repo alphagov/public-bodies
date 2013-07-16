@@ -117,7 +117,7 @@ function drawGroupedBar(err, json) {
 	return;
     }
 
-    var departments = json['all_bodies'].map(function (d) { return d.values });
+    var departments = json.map(function (d) { return d.bodies });
     var svg = d3.select('svg.groupedbar');
 
     var barchart = InteractiveBarChart(svg);

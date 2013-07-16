@@ -2,8 +2,6 @@
 layout: default-visualised
 page.css: page.css
 ---
-
-<h1>Non-Departmental Public Bodies</h1>
 <p>Non-departmental public bodies (NDPBs) are organisations that sit at ‘arm’s-length’ from ministers and have varying degrees of operational autonomy and independence from ministers. They have differing roles, including those that advise ministers and others which carry out executive or regulatory functions, and they work within a strategic framework set by ministers. As part of the reform programme, all NDPBs have been examined to ensure that they perform a necessary role.</p>
 <p>The Cabinet Office report Public bodies provides lists of all NDPBs and headline information on the NDPB sector. This data is presented on these pages.</p>
 <p>In 2011 the Public Bodies Act 2011 was introduced. This allowed the Government to shutdown, merge or reform public bodies.</p>
@@ -24,31 +22,38 @@ page.css: page.css
 <input type="checkbox" id="show-zero">Show Zero Values</input>
 
 <script src="groupedbar.js"></script>
-<script src="barchart.js"></script>
-
-<script src="/assets/toolkit/javascripts/vendor/d3/d3.v3.js"></script>
-<script src="chroma.min.js"></script>
-<script src="numeral.js"></script>
-<script src="sorttable.js"></script>
 <script>
-  $(function() { $('table > tbody > tr > td:nth-child(3)').each(function() {
-  var n = numeral($(this).text()).format('\£0,0[.]00');
-  $(this).text('£' + n);
-  }) });
+  
 </script>
+<script src="barchart.js"></script>
 <p>Each Department has its own public bodies. These are presented in the table below</p>
-<table class="sortable" id="fundingtable">
+<table id="fundingtable">
   <thead>
-    <th>Name</th><th>Department</th><th>Funding</th>
+    <th>Name</th><th>Department</th><th>Funding</th><th>OCPA Regulated</th><th>Public Meetings</th><th>Public Minutes</th><th>Register of Interests</th><th>Regulatory Function</th>
   </thead>
   <tbody>
     {% for department_entry in page.data %}
-    {% for public_body in department_entry['values'] %}
+    {% for public_body in department_entry['bodies'] %}
     <tr class="dataline" data-department="{{public_body['department']}}" data-funding="{{public_body['government-funding']}}" data-name="{{public_body['name']}}">
       <td><a href="./{{ public_body['clean-department'] }}/{{ public_body['clean-name'] }}.html">{{ public_body.name }}</a></td>
       <td>{{public_body['department']}}</td>
-      <td sorttable_customkey="{{ public_body['government-funding']}}" style="font-family:'ntatabularnumbers'">{{ public_body['government-funding']}}</td>
-    </tr>    
+      <td style="font-family:'ntatabularnumbers'">{{ public_body['government-funding-formatted']}}</td>
+      <td>
+	{% if public_body['ocpa-regulated'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['public-meetings'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['public-minutes'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['register-of-interests'] %}Yes{% else %}No{% endif %}
+      </td>
+      <td>
+	{% if public_body['regulatory-function'] %}Yes{% else %}No{% endif %}
+      </td>
+    </tr>
     {% endfor %}
     {% endfor %}
   </tbody>
@@ -56,3 +61,29 @@ page.css: page.css
 
 </table>
 <span> Data available under the Open Government License </span>
+<script>
+  $.tablesorter.addParser({
+  id: 'ukcurrency',
+  is: function(s) {
+  return s[0] == '£'
+  },
+  format: function(s) {
+  return s.replace('£', '').replace(/,/g,'');
+  },
+  type:'numeric'
+  }
+  )
+  $(document).ready(function()
+  {
+  $("#fundingtable").tablesorter({
+  headers : {
+  2: {
+  sorter:'ukcurrency'
+  }
+  },
+  sortList: [[0,0]]
+
+  });
+  }
+  );
+</script>

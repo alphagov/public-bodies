@@ -26,3 +26,11 @@ svg > g > path.domain {
     stroke: black;
     shape-rendering: crispEdges;
 }
+
+.headerSortUp:after {
+    content:" ▾"
+}
+.headerSortDown:after {
+    content:" ▴"
+}
+
