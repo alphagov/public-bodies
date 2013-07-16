@@ -39,7 +39,7 @@ layout: default-no-wrapper
       
       <h1>Contact</h1>
       
-      <p>Web: <a href='{{page.data.website}}'>{{page.data.website}}</a></p>
+      {% if page.data.website != 'http://None' %}<p>Web: <a href='{{page.data.website}}'>{{page.data.website}}</a></p>{% endif %}
       <p>Email: <a href='mailto:{{page.data.email}}'>{{page.data.email}}</a></p>
       <p>Telelphone: {{page.data.phone}}</p>
       <p>Post: {{page.data.address}}</p>
