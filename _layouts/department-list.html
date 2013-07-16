@@ -22,10 +22,7 @@ page.css: page.css
 <input type="checkbox" id="show-zero">Show Zero Values</input>
 
 <script src="groupedbar.js"></script>
-<script>
-  
-</script>
-<script src="barchart.js"></script>
+<script src="/barchart.js"></script>
 <p>Each Department has its own public bodies. These are presented in the table below</p>
 <table id="fundingtable">
   <thead>
@@ -86,4 +83,5 @@ page.css: page.css
   });
   }
   );
+  $(function() { d3.json('index.json', drawGroupedBar('svg.groupedbar', function(e) { return e.map(function(d) { return d.bodies; }) }) ) }) 
 </script>

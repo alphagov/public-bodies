@@ -16,7 +16,7 @@ function InteractiveBarChart(svg) {
 	    var showZeroChanged = showZero == this.showedZero;
 	    var fieldChanged = this.last == field;
 
-	    
+
 	    var barGroup = this.barGroup;
 	    var height = this.height;
 	    var width = this.width;
@@ -26,7 +26,7 @@ function InteractiveBarChart(svg) {
 
 	    var bodyStrings = bodies.map(function (d) { return d.name });
 	    var barScale = d3.scale.ordinal().domain(bodyStrings).rangeRoundBands([this.barLeft, width]);
-	    
+
 	    var bodyValues = bodies.map(function (d) { return parseInt(d[field])});
 
 	    var max = Math.max.apply(Math, bodyValues)
@@ -67,7 +67,7 @@ function InteractiveBarChart(svg) {
 			.style('left', d3.event.pageX + 'px')
 			.style('top', (d3.event.pageY + 5) + 'px')
 			.append('p').text(d['name'])
-			.append('p').text(d[field]);
+			.append('p').text(d[field + '-formatted'] ? d[field + '-formatted'] : d[field]);
 		})
 		.on("mouseleave", function(d) {
 		    d3.select('.tooltip').remove();
@@ -75,7 +75,7 @@ function InteractiveBarChart(svg) {
 		.on("click", function(d) {
 		    window.location.href = d['clean-department'] + '/' + d['clean-name'] + '.html'
 		})
-	    
+
 	    if(this.last != field) {
 		rects
 		    .attr('y', heightScale.range()[1])
@@ -95,9 +95,9 @@ function InteractiveBarChart(svg) {
 		return 'translate(' + x + ',' + y + ')';
 	    }
 
-	    
+
 	    this.axisGroupY.attr('transform', _translate(barScale.range()[0] - 1, 0));
-	    
+
 	    var Yaxis = d3.svg.axis()
 		.scale(heightScale)
 		.orient("left")
@@ -105,34 +105,35 @@ function InteractiveBarChart(svg) {
 		.tickFormat(d3.format(",.0f"));
 
 	    this.axisGroupY.call(Yaxis);
-	   
-	    
+
+
 	}
     }
 }
 
+function drawGroupedBar(element, jsonFunc) {
+    return function(err, json) {
+	if(err) {
+	    alert(err);
+	    return;
+	}
+	var departments = jsonFunc(json);
+	var svg = d3.select(element);
 
-function drawGroupedBar(err, json) {
-    if(err) {
-	return;
+	var barchart = InteractiveBarChart(svg);
+
+	function changeFunc() {
+	    var showZero = $('#show-zero').is(':checked');
+	    var log = $('input[name=log]:checked').val() == 'log';
+	    var field = $('#bar-value').val();
+	    barchart.drawBars(field, log, showZero, departments);
+	}
+
+	d3.select('#bar-value').on("change", changeFunc);
+	d3.select('#show-zero').on("change", changeFunc);
+	d3.selectAll('.radioLog').on("change", changeFunc);
+
+	changeFunc();
     }
-
-    var departments = json.map(function (d) { return d.bodies });
-    var svg = d3.select('svg.groupedbar');
-
-    var barchart = InteractiveBarChart(svg);
-
-    function changeFunc() {
-	var showZero = $('#show-zero').is(':checked');
-	var log = $('input[name=log]:checked').val() == 'log';
-	var field = $('#bar-value').val();
-	barchart.drawBars(field, log, showZero, departments);
-    }
-    
-    d3.select('#bar-value').on("change", changeFunc);
-    d3.select('#show-zero').on("change", changeFunc);
-    d3.selectAll('.radioLog').on("change", changeFunc);
-    
-    changeFunc();
 }
-$(function() { d3.json('index.json', drawGroupedBar); })
+

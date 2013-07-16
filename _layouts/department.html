@@ -74,4 +74,5 @@ page.css: page.css
   });
   }
   );
+  $(function() { d3.json('index.json', drawGroupedBar('svg.groupedbar', function(d) { return d.bodies; }))});
 </script>
