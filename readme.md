@@ -17,4 +17,6 @@ bundle install
 jekyll serve
 ```
 
-Browse to [http://localhost:4000/] to view the page.
+Browse to http://localhost:4000/ to view the page.
+
+Alternatively use `jekyll build` and deploy `_site/` on any site you please.
